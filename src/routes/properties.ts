@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { body, param, query } from 'express-validator';
-import { prisma } from '../server';
+import { prisma } from '../lib/prisma';
 import { authenticateToken } from '../middleware/auth';
 import { validate } from '../middleware/validation';
 

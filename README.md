@@ -43,6 +43,7 @@ npm install
 ### 2. Database Setup
 
 #### Option A: Using Docker (Recommended)
+
 ```bash
 # Start PostgreSQL and Adminer
 docker-compose up -d
@@ -53,6 +54,7 @@ docker-compose up -d
 ```
 
 #### Option B: Local PostgreSQL
+
 Ensure PostgreSQL is running and create a database named `rentopia`.
 
 ### 3. Environment Configuration
@@ -91,6 +93,7 @@ npm run dev
 ## API Endpoints
 
 ### Authentication
+
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - Login user
 - `GET /api/auth/me` - Get current user profile
@@ -98,6 +101,7 @@ npm run dev
 - `POST /api/auth/refresh` - Refresh JWT token
 
 ### Properties
+
 - `GET /api/properties` - Get all properties
 - `POST /api/properties` - Create new property
 - `GET /api/properties/:id` - Get property by ID
@@ -105,6 +109,7 @@ npm run dev
 - `DELETE /api/properties/:id` - Delete property
 
 ### Bookings
+
 - `GET /api/bookings` - Get all bookings
 - `POST /api/bookings` - Create new booking
 - `GET /api/bookings/:id` - Get booking by ID
@@ -112,16 +117,19 @@ npm run dev
 - `DELETE /api/bookings/:id` - Delete booking
 
 ### Maintenance Tasks
+
 - `GET /api/maintenance` - Get all maintenance tasks
 
 ### Service Providers
+
 - `GET /api/service-providers` - Get all service providers
 
 ## Demo Data
 
 The seed script creates demo data including:
 
-- **Demo User:** 
+- **Demo User:**
+
   - Email: `demo@rentopia.com`
   - Password: `Password123!`
 
@@ -162,6 +170,7 @@ npm run db:studio    # Open Prisma Studio (database GUI)
 ## Health Check
 
 Once the server is running, visit:
+
 - **API Health:** http://localhost:3000/health
 - **Database GUI:** http://localhost:8080 (if using Docker)
 - **Prisma Studio:** Run `npm run db:studio`
@@ -185,6 +194,7 @@ Once the server is running, visit:
 ## Error Handling
 
 The API includes comprehensive error handling with:
+
 - Structured error responses
 - Validation error details
 - Production-safe error messages
@@ -201,9 +211,75 @@ This backend provides a solid foundation for the Rentopia application. To comple
 5. **Payment Integration** - Stripe or PayPal integration
 6. **Calendar Integration** - Sync with external calendars
 
+## Deployment on Vercel
+
+### Quick Deploy
+
+1. **Setup Database** (Recommended: [Neon](https://neon.tech) - Free PostgreSQL)
+   ```bash
+   # Create account on neon.tech
+   # Create new project and copy connection string
+   ```
+
+2. **Deploy to Vercel**
+   ```bash
+   # Install Vercel CLI
+   npm install -g vercel
+   
+   # Login and deploy
+   vercel login
+   vercel
+   ```
+
+3. **Configure Environment Variables** (in Vercel Dashboard)
+   - `DATABASE_URL` - Your PostgreSQL connection string
+   - `DIRECT_URL` - Same as DATABASE_URL for most providers
+   - `JWT_SECRET` - Strong random string (32+ characters)
+   - `JWT_REFRESH_SECRET` - Different strong random string
+   - `NODE_ENV` - Set to `production`
+   - `CORS_ORIGIN` - Your frontend domain (optional)
+
+4. **Setup Database Schema**
+   ```bash
+   # Generate Prisma client
+   npm run db:generate
+   
+   # Push schema to database
+   npx prisma db push
+   
+   # Seed with demo data (optional)
+   npm run db:seed
+   ```
+
+5. **Test Deployment**
+   ```
+   GET https://your-project.vercel.app/health
+   ```
+
+### Deployment Script
+
+Use the included deployment script for automated deployment:
+
+```bash
+# Run the deployment script
+deploy-vercel.bat
+```
+
+### Detailed Guide
+
+See [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) for complete step-by-step instructions.
+
+### Database Providers
+
+- **Neon**: Free PostgreSQL with excellent Vercel integration
+- **Supabase**: PostgreSQL with additional features like auth and storage
+- **PlanetScale**: MySQL-compatible with database branching
+- **Railway**: Simple PostgreSQL setup
+
 ## Troubleshooting
 
 ### Database Connection Issues
+
 ```bash
 # Check if PostgreSQL is running
 docker-compose ps
@@ -216,9 +292,11 @@ npm run db:reset
 ```
 
 ### Port Conflicts
+
 If port 3000 is already in use, change the `PORT` variable in your `.env` file.
 
 ### TypeScript Compilation Errors
+
 ```bash
 # Clean build
 rm -rf dist/

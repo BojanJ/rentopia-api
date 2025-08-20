@@ -4,7 +4,9 @@ import helmet from "helmet";
 import compression from "compression";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import { PrismaClient } from "@prisma/client";
+
+// Import Prisma client
+import { prisma } from "./lib/prisma";
 
 // Import Swagger configuration
 import { setupSwagger } from "./config/swagger";
@@ -19,8 +21,8 @@ import serviceProviderRoutes from "./routes/serviceProviders";
 // Load environment variables
 dotenv.config();
 
-// Initialize Prisma client
-export const prisma = new PrismaClient();
+// Export prisma for use in other files
+export { prisma };
 
 // Create Express app
 const app = express();
