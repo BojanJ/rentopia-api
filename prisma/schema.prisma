@@ -6,9 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 // Enums
@@ -126,6 +125,9 @@ model Property {
   cleaningFee    Decimal        @default(0) @map("cleaning_fee") @db.Decimal(8, 2)
   securityDeposit Decimal       @default(0) @map("security_deposit") @db.Decimal(10, 2)
   status         PropertyStatus @default(active)
+  icalUrl        String?        @map("ical_url") @db.VarChar(500) // Calendar sync URL
+  lastSyncAt     DateTime?      @map("last_sync_at") // Last successful sync timestamp
+  syncEnabled    Boolean        @default(false) @map("sync_enabled") // Enable/disable auto sync
   createdAt      DateTime       @default(now()) @map("created_at")
   updatedAt      DateTime       @updatedAt @map("updated_at")
 
@@ -200,6 +202,7 @@ model Booking {
   specialRequests String?       @map("special_requests")
   internalNotes   String?       @map("internal_notes")
   bookingSource   String?       @map("booking_source") @db.VarChar(100)
+  externalId      String?       @map("external_id") @db.VarChar(200) // External booking ID from calendar
   confirmationCode String?      @unique @map("confirmation_code") @db.VarChar(50)
   createdAt       DateTime      @default(now()) @map("created_at")
   updatedAt       DateTime      @updatedAt @map("updated_at")

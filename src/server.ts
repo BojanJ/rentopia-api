@@ -17,6 +17,10 @@ import propertyRoutes from "./routes/properties";
 import bookingRoutes from "./routes/bookings";
 import maintenanceRoutes from "./routes/maintenance";
 import serviceProviderRoutes from "./routes/serviceProviders";
+import calendarRoutes from "./routes/calendar";
+
+// Import scheduler
+import { CalendarScheduler } from "./services/calendarScheduler";
 
 // Load environment variables
 dotenv.config();
@@ -97,6 +101,7 @@ app.use("/api/properties", propertyRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/maintenance", maintenanceRoutes);
 app.use("/api/service-providers", serviceProviderRoutes);
+app.use("/api/calendar", calendarRoutes);
 
 // 404 handler
 app.use("*", (req, res) => {
@@ -134,6 +139,9 @@ const gracefulShutdown = async (signal: string) => {
   console.log(`Received ${signal}. Starting graceful shutdown...`);
 
   try {
+    // Stop calendar scheduler
+    CalendarScheduler.stop();
+    
     await prisma.$disconnect();
     console.log("Database connection closed");
     process.exit(0);
@@ -147,11 +155,15 @@ process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
 process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 
 // Start server
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📝 Health check: http://localhost:${PORT}/health`);
   console.log(`📚 API Docs: http://localhost:${PORT}/api-docs`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
+  
+  // Start calendar scheduler with initial sync
+  await CalendarScheduler.start();
+  console.log(`📅 Calendar sync scheduler started`);
 });
 
 export default server;
