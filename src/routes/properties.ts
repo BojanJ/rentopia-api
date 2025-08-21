@@ -53,7 +53,15 @@ const propertyValidation = [
     .withMessage('Max occupancy must be at least 1'),
   body('basePrice')
     .isFloat({ min: 0 })
-    .withMessage('Base price must be a non-negative number')
+    .withMessage('Base price must be a non-negative number'),
+  body('icalUrl')
+    .optional()
+    .isURL()
+    .withMessage('iCal URL must be a valid URL'),
+  body('syncEnabled')
+    .optional()
+    .isBoolean()
+    .withMessage('Sync enabled must be a boolean value')
 ];
 
 /**
@@ -454,7 +462,9 @@ router.post('/', validate(propertyValidation), async (req: Request, res: Respons
       checkOutTime,
       basePrice,
       cleaningFee,
-      securityDeposit
+      securityDeposit,
+      icalUrl,
+      syncEnabled
     } = req.body;
 
     const property = await prisma.property.create({
@@ -479,7 +489,9 @@ router.post('/', validate(propertyValidation), async (req: Request, res: Respons
         checkOutTime: checkOutTime || undefined,
         basePrice: parseFloat(basePrice),
         cleaningFee: cleaningFee ? parseFloat(cleaningFee) : 0,
-        securityDeposit: securityDeposit ? parseFloat(securityDeposit) : 0
+        securityDeposit: securityDeposit ? parseFloat(securityDeposit) : 0,
+        icalUrl: icalUrl || null,
+        syncEnabled: syncEnabled || false
       },
       include: {
         images: true
@@ -641,6 +653,7 @@ router.put('/:id', [
     if (updateData.basePrice) updateData.basePrice = parseFloat(updateData.basePrice);
     if (updateData.cleaningFee) updateData.cleaningFee = parseFloat(updateData.cleaningFee);
     if (updateData.securityDeposit) updateData.securityDeposit = parseFloat(updateData.securityDeposit);
+    if (updateData.syncEnabled !== undefined) updateData.syncEnabled = Boolean(updateData.syncEnabled);
 
     const property = await prisma.property.updateMany({
       where: {
